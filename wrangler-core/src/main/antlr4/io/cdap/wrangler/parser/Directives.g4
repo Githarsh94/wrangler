@@ -64,6 +64,8 @@ directive
     | stringList
     | numberRanges
     | properties
+    | BYTE_SIZE        // This tells the parser that these new
+    | TIME_DURATION    // literal types are valid arguments to directives.
   )*?
   ;
 
@@ -140,7 +142,7 @@ numberRange
  ;
 
 value
- : String | Number | Column | Bool
+ : String | Number | Column | Bool | BYTE_SIZE | TIME_DURATION  // BYTE_SIZE and TIME_DURATION also accept a value
  ;
 
 ecommand
@@ -195,6 +197,14 @@ identifierList
  : Identifier (',' Identifier)*
  ;
 
+byteSizeArg
+  : BYTE_SIZE
+  ;
+
+timeDurationArg
+  : TIME_DURATION
+  ;
+
 
 /*
  * Following are the Lexer Rules used for tokenizing the recipe.
@@ -247,6 +257,13 @@ BackSlash: '\\';
 Dollar   : '$';
 Tilde    : '~';
 
+BYTE_SIZE    // BYTE SIZE units like 10MB, 5GB, etc.
+  : [0-9]+ ('.' [0-9]+)? BYTE_UNIT
+  ;
+
+TIME_DURATION    // TIME DURATION units like 5s, 10min, etc.
+  : [0-9]+ ('.' [0-9]+)? TIME_UNIT
+  ;
 
 Bool
  : 'true'
@@ -311,3 +328,11 @@ fragment Int
 fragment Digit
  : [0-9]
  ;
+
+fragment BYTE_UNIT
+  : 'B' | 'KB' | 'MB' | 'GB' | 'TB' | 'PB' | 'b' | 'kb' | 'mb' | 'gb' | 'tb' | 'pb'
+  ;
+
+fragment TIME_UNIT
+  : 'MS' | 'S' | 'M' | 'H' | 'D' | 'ms' | 's' | 'm' | 'h' | 'd'
+  ;
